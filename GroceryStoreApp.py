@@ -221,7 +221,7 @@ def show_order_history():
     with open(SALES_FILE, "r", encoding="utf-8") as f:
         sales = json.load(f)
         for s in sales:
-            listbox.insert(tk.END, f"{s['date']} | Total: {s['total']} TL | Products: {[p['name'] for p in s['products']]}")
+            listbox.insert(tk.END, f"{s['date']} | Total: {s['total']} USD | Products: {[p['name'] for p in s['products']]}")
 
 #Update Cart
 def update_cart():
@@ -230,7 +230,7 @@ def update_cart():
     for product in cart:
         listbox_cart.insert(tk.END, f"{product['name']} - {product['price']} TL")
         total += product['price']
-    lbl_total.config(text=f"Total: {total:.2f} TL")
+    lbl_total.config(text=f"Total: {total:.2f}  USD")
 
 #Search Product
 def search_product():
@@ -238,7 +238,7 @@ def search_product():
     listbox_products.delete(0, tk.END)
     for product in products:
         if search in product['name'].lower():
-            listbox_products.insert(tk.END, f"{product['name']} - {product['price']} TL - Stock: {product['stock']}")
+            listbox_products.insert(tk.END, f"{product['name']} - {product['price']} USD - Stock: {product['stock']}")
 
 #Graph
 def sales_graph():
@@ -324,7 +324,7 @@ lbl_cart.pack()
 listbox_cart = tk.Listbox(frame_right)
 listbox_cart.pack(fill=tk.BOTH, expand=True)
 
-lbl_total = tk.Label(frame_right, text="Total: 0 TL", bg="#f0f0f0", font=("Arial", 14, "bold"))
+lbl_total = tk.Label(frame_right, text="Total: 0 USD", bg="#f0f0f0", font=("Arial", 14, "bold"))
 lbl_total.pack(pady=5)
 
 btn_add_cart = tk.Button(frame_right, text="Add to Cart", command=add_to_cart, bg="#5fbf00", fg="white")
