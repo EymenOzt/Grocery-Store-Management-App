@@ -1,0 +1,509 @@
+#-------------Developer: Ömür Eymen Öztürk---------------------------------
+#-------------Developer Social Media Accounts-------------------------------
+#GitHUB: https://github.com/EymenOzt
+#Mail:eymenozt01@gmail.com
+#----------------------------------------------------------------------------
+import tkinter as tk
+from tkinter import messagebox
+import json, os
+from datetime import datetime
+import matplotlib.pyplot as plt
+import webbrowser
+# ================== LANGUAGE SYSTEM ==================
+LANG = {
+    "en": {
+        # UI text
+        "add_cart":"Add Cart",
+        "products": "Products",
+        "cart": "Cart",
+        "add_product": "Add Product",
+        "delete_product": "Delete Product",
+        "update_stock": "Update Stock",
+        "update_price": "Update Price & Discount",
+        "search": "Search",
+        "complete_purchase": "Complete Purchase",
+        "order_history": "Order History",
+        "sales_graph": "Sales Graph",
+        "total": "Total",
+        "settings": "Settings",
+        "select_language": "Select Language / Dil Seçin",
+        "english": "English",
+        "turkish": "Türkçe",
+        "remove_from_cart": "Remove from Cart",
+        "clear_cart": "Clear Cart",
+        "export_cart": "Export Cart",  
+        "about_window": "About",
+        "quantity": "Quantity",
+        
+        
+
+        # Placeholders
+        "ph_name": "Product Name",
+        "ph_price": "Price",
+        "ph_discount": "Discount (%)",
+        "ph_category": "Category",
+        
+        # MessageBox
+        "error_select_product": "Please select a product!",
+        "error_price_discount": "Price and discount must be numbers!",
+        "error_quantity": "Enter a valid positive quantity!",
+        "error_stock": "Only {} available in stock!",
+        "cart_empty": "Cart is empty.",
+        "purchase_complete": "Purchase completed.",
+        "no_orders": "No orders yet."
+    },
+    "tr": {
+        # UI text
+        "add_cart":"Sepete Ekle",
+        "products": "Ürünler",
+        "cart": "Sepet",
+        "add_product": "Ürün Ekle",
+        "delete_product": "Ürün Sil",
+        "update_stock": "Stok Güncelle",
+        "update_price": "Fiyat & İndirim Güncelle",
+        "search": "Ara",
+        "complete_purchase": "Alışverişi Tamamla",
+        "order_history": "Sipariş Geçmişi",
+        "sales_graph": "Satış Grafiği",
+        "total": "Toplam",
+        "settings": "Ayarlar",
+        "select_language": "Dil Seçin / Select Language",
+        "english": "İngilizce",
+        "turkish": "Türkçe",
+        "remove_from_cart": "Sepetten Kaldır",
+        "clear_cart": "Sepeti Temizle",
+        "export_cart": "Sepeti Dışa Aktar", 
+        "about_window": "Bilgi" ,
+        "quantity":"Miktar",
+        
+        
+        # Placeholders
+        "ph_name": "Ürün Adı",
+        "ph_price": "Fiyat",
+        "ph_discount": "İndirim (%)",
+        "ph_category": "Kategori",
+        
+        # MessageBox
+        "error_select_product": "Lütfen bir ürün seçin!",
+        "error_price_discount": "Fiyat ve indirim sayısal olmalı!",
+        "error_quantity": "Geçerli pozitif miktar girin!",
+        "error_stock": "Stokta sadece {} ürün var!",
+        "cart_empty": "Sepet boş.",
+        "purchase_complete": "Alışveriş tamamlandı.",
+        "no_orders": "Henüz sipariş yok."
+    }
+}
+
+current_lang = "en"
+current_theme = "light"
+
+# ================== DATA FILES ==================
+PRODUCTS_FILE = "products.json"
+SALES_FILE = "sales.json"
+
+# ================== DATA STRUCTURES ==================
+products = []
+cart = []
+
+# ================== PLACEHOLDER FUNCTION ==================
+def set_placeholder(entry, placeholder_text):
+    entry.delete(0, tk.END)
+    entry.insert(0, placeholder_text)
+    entry.config(fg="gray")
+
+    def on_focus_in(event):
+        if entry.get() == placeholder_text:
+            entry.delete(0, tk.END)
+            entry.config(fg="black")
+
+    def on_focus_out(event):
+        if not entry.get():
+            entry.insert(0, placeholder_text)
+            entry.config(fg="gray")
+
+    entry.bind("<FocusIn>", on_focus_in)
+    entry.bind("<FocusOut>", on_focus_out)
+
+# ================== LOAD / SAVE PRODUCTS ==================
+if os.path.exists(PRODUCTS_FILE):
+    with open(PRODUCTS_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
+        if isinstance(data, list):
+            products = data
+        else:
+            products = list(data.values())
+
+def save_products():
+    with open(PRODUCTS_FILE, "w", encoding="utf-8") as f:
+        json.dump(products, f, indent=4, ensure_ascii=False)
+
+# ================== THEME FUNCTION ==================
+def apply_theme():
+    bg_color = "#f0f0f0" if current_theme == "light" else "#302D2D"
+    root.configure(bg=bg_color)
+    frame_left.configure(bg=bg_color)
+    frame_right.configure(bg=bg_color)
+    quantity_frame.configure(bg=bg_color)
+
+    lbl_products.configure(bg=bg_color)
+    lbl_cart.configure(bg=bg_color)
+    lbl_total.configure(bg=bg_color)
+    quantity_label.configure(bg=bg_color)
+
+    entry_search.configure(bg="white" if current_theme=="light" else "#302D2D")
+    entry_name.configure(bg="white" if current_theme=="light" else "#302D2D")
+    entry_price.configure(bg="white" if current_theme=="light" else "#302D2D")
+    entry_discount.configure(bg="white" if current_theme=="light" else "#302D2D")
+    entry_category.configure(bg="white" if current_theme=="light" else "#302D2D")
+    quantity_entry.configure(bg="white" if current_theme=="light" else "#302D2D")
+
+def set_theme(theme):
+    global current_theme
+    current_theme = theme
+    apply_theme()
+
+# ================== LANGUAGE FUNCTION ==================
+def update_language():
+    lbl_products.config(text=LANG[current_lang]["products"])
+    lbl_cart.config(text=LANG[current_lang]["cart"])
+    btn_add.config(text=LANG[current_lang]["add_product"])
+    btn_delete.config(text=LANG[current_lang]["delete_product"])
+    btn_update_stock.config(text=LANG[current_lang]["update_stock"])
+    btn_update_price.config(text=LANG[current_lang]["update_price"])
+    btn_search.config(text=LANG[current_lang]["search"])
+    btn_complete_purchase.config(text=LANG[current_lang]["complete_purchase"])
+    btn_order_history.config(text=LANG[current_lang]["order_history"])
+    btn_sales_graph.config(text=LANG[current_lang]["sales_graph"])
+    lbl_total.config(text=f"{LANG[current_lang]['total']}: 0 ")
+    btn_settings.config(text=LANG[current_lang]["settings"])
+    btn_remove_cart.config(text=LANG[current_lang].get("remove_from_cart","Remove from Cart"))
+    btn_clear_cart.config(text=LANG[current_lang].get("clear_cart","Clear Cart"))
+    btn_export_cart.config(text=LANG[current_lang].get("export_cart","Export Cart"))
+    btn_add_cart.config(text=LANG[current_lang].get("add_cart"))
+    btn_about.config(text=LANG[current_lang].get("about_window"))
+
+    for entry, ph in zip([entry_name, entry_price, entry_discount, entry_category],
+                         ["ph_name","ph_price","ph_discount","ph_category"]):
+        set_placeholder(entry, LANG[current_lang][ph])
+
+def set_language(lang):
+    global current_lang
+    current_lang = lang
+    update_language()
+# ================== ABOUT FUNCTION ==================
+def about_window ():
+    about_window = tk.Toplevel(root)
+    about_window.title
+    about_window.geometry("240x150")
+
+    tk.Label(about_window,
+        text="Grocery Manager v1.1\nDeveloped By Ömür Eymen Öztürk\nCopyright (c) 2025 Ömür Eymen Öztürk",
+        font=("Arial", 10),
+        justify="center"
+    ).pack(pady=10)
+
+    tk.Button(
+        about_window,
+        text="Visit GitHub",
+        command=lambda: webbrowser.open("https://github.com/EymenOzt")  # örnek link
+    ).pack(pady=5)
+    
+# ================== SETTINGS WINDOW ==================
+def open_settings():
+    settings_window = tk.Toplevel(root)
+    settings_window.title(LANG[current_lang]["settings"])
+    settings_window.geometry("250x220")
+
+    lbl_lang = tk.Label(settings_window, text=LANG[current_lang]["select_language"])
+    lbl_lang.pack(pady=5)
+
+    btn_en = tk.Button(settings_window, text=LANG[current_lang]["english"], command=lambda: set_language("en"))
+    btn_en.pack(pady=2)
+
+    btn_tr = tk.Button(settings_window, text=LANG[current_lang]["turkish"], command=lambda: set_language("tr"))
+    btn_tr.pack(pady=2)
+
+    lbl_theme = tk.Label(settings_window, text="Select Theme / Tema Seçin:")
+    lbl_theme.pack(pady=10)
+
+    btn_light = tk.Button(settings_window, text="Light / Beyaz", command=lambda: set_theme("light"))
+    btn_light.pack(pady=2)
+
+    btn_dark = tk.Button(settings_window, text="Dark / Karanlık", command=lambda: set_theme("dark"))
+    btn_dark.pack(pady=2)
+
+# ================== PRODUCT FUNCTIONS ==================
+def update_product_list():
+    listbox_products.delete(0, tk.END)
+    for product in products:
+        listbox_products.insert(tk.END, f"{product['name']} - {product['price']} tl - Stock: {product['stock']}")
+
+def add_product():
+    name = entry_name.get()
+    price = entry_price.get()
+    discount = entry_discount.get()
+    category = entry_category.get()
+
+    try:
+        price = float(price)
+        discount = float(discount) if discount else 0.0
+    except ValueError:
+        messagebox.showerror("Error", LANG[current_lang]["error_price_discount"])
+        return
+
+    price *= (1 - discount / 100)
+
+    for product in products:
+        if product["name"].lower() == name.lower():
+            messagebox.showerror("Error", LANG[current_lang]["error_select_product"])
+            return
+
+    new_product = {"name": name, "price": round(price, 2), "stock": 10, "category": category}
+    products.append(new_product)
+    save_products()
+    update_product_list()
+
+def delete_product():
+    selected = listbox_products.curselection()
+    if not selected:
+        messagebox.showerror("Error", LANG[current_lang]["error_select_product"])
+        return
+    del products[selected[0]]
+    save_products()
+    update_product_list()
+
+# ================== CART FUNCTIONS ==================
+def add_to_cart():
+    selected = listbox_products.curselection()
+    if not selected:
+        messagebox.showerror("Error", LANG[current_lang]["error_select_product"])
+        return
+    try:
+        quantity = int(quantity_entry.get())
+        if quantity <= 0:
+            raise ValueError
+    except ValueError:
+        messagebox.showerror("Error", LANG[current_lang]["error_quantity"])
+        return
+
+    product = products[selected[0]]
+
+    if product["stock"] < quantity:
+        messagebox.showerror("Stock Error", LANG[current_lang]["error_stock"].format(product["stock"]))
+        return
+
+    product["stock"] -= quantity
+    for _ in range(quantity):
+        cart.append(product)
+    update_product_list()
+    update_cart()
+
+def remove_from_cart():
+    selected = listbox_cart.curselection()
+    if not selected:
+        return
+    product = cart[selected[0]]
+    product["stock"] += 1
+    del cart[selected[0]]
+    update_product_list()
+    update_cart()
+
+def clear_cart():
+    for product in cart:
+        product["stock"] += 1
+    cart.clear()
+    update_product_list()
+    update_cart()
+
+def export_cart():
+    with open("cart_output.txt", "w", encoding="utf-8") as f:
+        for product in cart:
+            f.write(f"{product['name']} - {product['price']} Money\n")
+    messagebox.showinfo("Success", "Cart exported.")
+
+def complete_purchase():
+    if not cart:
+        messagebox.showerror("Error", LANG[current_lang]["cart_empty"])
+        return
+
+    sale = {
+        "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "products": cart[:],
+        "total": sum([p["price"] for p in cart])
+    }
+
+    if os.path.exists(SALES_FILE):
+        with open(SALES_FILE, "r", encoding="utf-8") as f:
+            sales = json.load(f)
+    else:
+        sales = []
+
+    sales.append(sale)
+    with open(SALES_FILE, "w", encoding="utf-8") as f:
+        json.dump(sales, f, indent=4, ensure_ascii=False)
+
+    cart.clear()
+    update_cart()
+    messagebox.showinfo("Success", LANG[current_lang]["purchase_complete"])
+
+# ================== ORDER HISTORY ==================
+def show_order_history():
+    if not os.path.exists(SALES_FILE):
+        messagebox.showinfo("Info", LANG[current_lang]["no_orders"])
+        return
+
+    window = tk.Toplevel(root)
+    window.title(LANG[current_lang]["order_history"])
+    listbox = tk.Listbox(window, width=80)
+    listbox.pack(padx=10, pady=10)
+
+    with open(SALES_FILE, "r", encoding="utf-8") as f:
+        sales = json.load(f)
+        for s in sales:
+            listbox.insert(tk.END, f"{s['date']} | Total: {s['total']} Money | Products: {[p['name'] for p in s['products']]}")
+
+# ================== UPDATE CART DISPLAY ==================
+def update_cart():
+    listbox_cart.delete(0, tk.END)
+    total = 0
+    for product in cart:
+        listbox_cart.insert(tk.END, f"{product['name']} - {product['price']} Money")
+        total += product['price']
+    lbl_total.config(text=f"{LANG[current_lang]['total']}: {total:.2f} Money")
+
+# ================== SEARCH ==================
+def search_product():
+    search = entry_search.get().lower()
+    listbox_products.delete(0, tk.END)
+    for product in products:
+        if search in product['name'].lower():
+            listbox_products.insert(tk.END, f"{product['name']} - {product['price']} Money - Stock: {product['stock']}")
+
+# ================== SALES GRAPH ==================
+def sales_graph():
+    if not os.path.exists(SALES_FILE):
+        messagebox.showerror("Error", LANG[current_lang]["no_orders"])
+        return
+
+    with open(SALES_FILE, "r", encoding="utf-8") as f:
+        sales = json.load(f)
+
+    product_counts = {}
+    for s in sales:
+        for p in s['products']:
+            product_counts[p['name']] = product_counts.get(p['name'], 0) + 1
+
+    product_names = list(product_counts.keys())
+    quantities = list(product_counts.values())
+
+    plt.figure(figsize=(10,6))
+    plt.bar(product_names, quantities, color="skyblue")
+    plt.xlabel("Products")
+    plt.ylabel("Quantity Sold")
+    plt.title("Best Selling Products")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+# ================== GUI ==================
+root = tk.Tk()
+root.title("Grocery Product System")
+root.geometry("950x600")
+root.configure(bg="#f0f0f0")
+
+# Frames
+frame_left = tk.Frame(root, bg="#f0f0f0")
+frame_left.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+frame_right = tk.Frame(root, bg="#f0f0f0")
+frame_right.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+# Labels
+lbl_products = tk.Label(frame_left, text="", bg="#f0f0f0", font=("Arial", 12, "bold"))
+lbl_products.pack()
+
+listbox_products = tk.Listbox(frame_left)
+listbox_products.pack(fill=tk.BOTH, expand=True)
+
+entry_search = tk.Entry(frame_left)
+entry_search.pack(pady=5, fill=tk.X)
+
+btn_search = tk.Button(frame_left, text="", command=search_product, bg="#007f3f", fg="white")
+btn_search.pack(pady=5, fill=tk.X)
+
+# Product Entry Fields
+entry_name = tk.Entry(frame_left)
+entry_name.pack(pady=2, fill=tk.X)
+
+entry_price = tk.Entry(frame_left)
+entry_price.pack(pady=2, fill=tk.X)
+
+entry_discount = tk.Entry(frame_left)
+entry_discount.pack(pady=2, fill=tk.X)
+
+entry_category = tk.Entry(frame_left)
+entry_category.pack(pady=2, fill=tk.X)
+
+# Buttons
+btn_add = tk.Button(frame_left, text="", command=add_product, bg="#5fbf00", fg="white")
+btn_add.pack(pady=5, fill=tk.X)
+
+btn_delete = tk.Button(frame_left, text="", command=delete_product, bg="#ff0000", fg="white")
+btn_delete.pack(pady=5, fill=tk.X)
+
+btn_update_stock = tk.Button(frame_left, text="", command=lambda: messagebox.showinfo("Info","Stock Update not implemented"), bg="#2626ff", fg="white")
+btn_update_stock.pack(pady=5, fill=tk.X)
+
+btn_update_price = tk.Button(frame_left, text="", command=lambda: messagebox.showinfo("Info","Price Update not implemented"), bg="#007fff", fg="white")
+btn_update_price.pack(pady=5, fill=tk.X)
+
+btn_about = tk.Button(root, text="About", command=about_window, bg="#0080ff", fg="white")
+btn_about.pack(pady=5)
+
+btn_settings = tk.Button(root, text="", command=open_settings, bg="#808080", fg="white")
+btn_settings.pack(pady=5)
+
+lbl_cart = tk.Label(frame_right, text="", bg="#f0f0f0", font=("Arial", 12, "bold"))
+lbl_cart.pack()
+
+listbox_cart = tk.Listbox(frame_right)
+listbox_cart.pack(fill=tk.BOTH, expand=True)
+
+lbl_total = tk.Label(frame_right, text="", bg="#f0f0f0", font=("Arial", 14, "bold"))
+lbl_total.pack(pady=5)
+
+btn_add_cart = tk.Button(frame_right, text="Add Cart", command=add_to_cart, bg="#5fbf00", fg="white")
+btn_add_cart.pack(pady=5, fill=tk.X)
+
+btn_remove_cart = tk.Button(frame_right, text="Remove from Cart", command=remove_from_cart, bg="#e50909", fg="white")
+btn_remove_cart.pack(pady=5, fill=tk.X)
+
+btn_clear_cart = tk.Button(frame_right, text="Clear Cart", command=clear_cart, bg="#ff0000", fg="white")
+btn_clear_cart.pack(pady=5, fill=tk.X)
+
+btn_export_cart = tk.Button(frame_right, text="Export Cart", command=export_cart, bg="#007fff", fg="white")
+btn_export_cart.pack(pady=5, fill=tk.X)
+
+btn_complete_purchase = tk.Button(frame_right, text="Complete Purchase", command=complete_purchase, bg="#3232bc", fg="white")
+btn_complete_purchase.pack(pady=5, fill=tk.X)
+
+btn_order_history = tk.Button(root, text="", command=show_order_history, bg="#007fff", fg="white")
+btn_order_history.pack(pady=5)
+
+btn_sales_graph = tk.Button(root, text="", command=sales_graph, bg="#007f3f", fg="white")
+btn_sales_graph.pack(pady=5)
+
+quantity_frame = tk.Frame(frame_right, bg="#f0f0f0")
+quantity_frame.pack(pady=10)
+
+quantity_label = tk.Label(quantity_frame, text="Quantity:", bg="#f0f0f0", font=("Arial", 10))
+quantity_label.pack(side=tk.LEFT)
+
+quantity_entry = tk.Entry(quantity_frame, width=5)
+quantity_entry.insert(0, "1")
+quantity_entry.pack(side=tk.LEFT, padx=5)
+
+update_language()
+apply_theme()
+update_product_list()
+root.mainloop()
