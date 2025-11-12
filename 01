@@ -8,7 +8,8 @@ from tkinter import messagebox
 import json, os
 from datetime import datetime
 import matplotlib.pyplot as plt
-import webbrowser
+import webbrowser 
+
 # ================== LANGUAGE SYSTEM ==================
 LANG = {
     "en": {
@@ -32,15 +33,14 @@ LANG = {
         "remove_from_cart": "Remove from Cart",
         "clear_cart": "Clear Cart",
         "export_cart": "Export Cart",  
-        "about_window": "About",
-        "quantity": "Quantity",
-        
-        
-
+        "about": "About",
+        "Quantity": "Quantity:",
+        "about_text":"Grocery Manager v1.1\nDeveloped By Ömür Eymen Öztürk\nGmail: eymenozt01@gmail.com\nCopyright (c) 2025 Ömür Eymen Öztürk",
+        "visit_github": "Visit GitHub",
         # Placeholders
         "ph_name": "Product Name",
         "ph_price": "Price",
-        "ph_discount": "Discount (%)",
+        "ph_discount": "Discount(%)",
         "ph_category": "Category",
         
         # MessageBox
@@ -73,9 +73,10 @@ LANG = {
         "remove_from_cart": "Sepetten Kaldır",
         "clear_cart": "Sepeti Temizle",
         "export_cart": "Sepeti Dışa Aktar", 
-        "about_window": "Bilgi" ,
-        "quantity":"Miktar",
-        
+        "about": "Bilgi" ,
+        "Quantity":"Miktar:",
+         "about_text": "Grocery Manager v1.1\nGeliştirici:Ömür Eymen Öztürk\nE-posta:eymenozt01@gmail.com\nTelif Hakkı (c) 2025 Ömür Eymen Öztürk",
+        "visit_github": "GitHub’ı Ziyaret Et" ,
         
         # Placeholders
         "ph_name": "Ürün Adı",
@@ -180,7 +181,9 @@ def update_language():
     btn_clear_cart.config(text=LANG[current_lang].get("clear_cart","Clear Cart"))
     btn_export_cart.config(text=LANG[current_lang].get("export_cart","Export Cart"))
     btn_add_cart.config(text=LANG[current_lang].get("add_cart"))
-    btn_about.config(text=LANG[current_lang].get("about_window"))
+    btn_about.config(text=LANG[current_lang].get("about"))
+    quantity_label.config(text=LANG[current_lang].get("Quantity"))
+    
 
     for entry, ph in zip([entry_name, entry_price, entry_discount, entry_category],
                          ["ph_name","ph_price","ph_discount","ph_category"]):
@@ -191,23 +194,25 @@ def set_language(lang):
     current_lang = lang
     update_language()
 # ================== ABOUT FUNCTION ==================
-def about_window ():
+def open_about_window():
     about_window = tk.Toplevel(root)
-    about_window.title
+    about_window.title(LANG[current_lang]["about"])
     about_window.geometry("240x150")
 
-    tk.Label(about_window,
-        text="Grocery Manager v1.1\nDeveloped By Ömür Eymen Öztürk\nCopyright (c) 2025 Ömür Eymen Öztürk",
-        font=("Arial", 10),
+    tk.Label(
+        about_window,
+        text=LANG[current_lang]["about_text"],
+        font=("Roboto", 10),
         justify="center"
-    ).pack(pady=10)
+    ).pack(pady=15)
 
     tk.Button(
-        about_window,
-        text="Visit GitHub",
-        command=lambda: webbrowser.open("https://github.com/EymenOzt")  # örnek link
+        about_window, 
+        text=LANG[current_lang]["visit_github"],
+        command=lambda: webbrowser.open("https://github.com/EymenOzt"),
+        bg="red",
+        fg="white"
     ).pack(pady=5)
-    
 # ================== SETTINGS WINDOW ==================
 def open_settings():
     settings_window = tk.Toplevel(root)
@@ -419,7 +424,7 @@ frame_right = tk.Frame(root, bg="#f0f0f0")
 frame_right.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
 # Labels
-lbl_products = tk.Label(frame_left, text="", bg="#f0f0f0", font=("Arial", 12, "bold"))
+lbl_products = tk.Label(frame_left, text="", bg="#f0f0f0", font=("Roboto", 12, "bold"))
 lbl_products.pack()
 
 listbox_products = tk.Listbox(frame_left)
@@ -457,22 +462,22 @@ btn_update_stock.pack(pady=5, fill=tk.X)
 btn_update_price = tk.Button(frame_left, text="", command=lambda: messagebox.showinfo("Info","Price Update not implemented"), bg="#007fff", fg="white")
 btn_update_price.pack(pady=5, fill=tk.X)
 
-btn_about = tk.Button(root, text="About", command=about_window, bg="#0080ff", fg="white")
+btn_about = tk.Button(root, text=LANG[current_lang]["about"], command=open_about_window, bg="#0080ff", fg="white")
 btn_about.pack(pady=5)
 
 btn_settings = tk.Button(root, text="", command=open_settings, bg="#808080", fg="white")
 btn_settings.pack(pady=5)
 
-lbl_cart = tk.Label(frame_right, text="", bg="#f0f0f0", font=("Arial", 12, "bold"))
+lbl_cart = tk.Label(frame_right, text="", bg="#f0f0f0", font=("Roboto", 12, "bold"))
 lbl_cart.pack()
 
 listbox_cart = tk.Listbox(frame_right)
 listbox_cart.pack(fill=tk.BOTH, expand=True)
 
-lbl_total = tk.Label(frame_right, text="", bg="#f0f0f0", font=("Arial", 14, "bold"))
+lbl_total = tk.Label(frame_right, text="", bg="#f0f0f0", font=("Roboto", 14, "bold"))
 lbl_total.pack(pady=5)
 
-btn_add_cart = tk.Button(frame_right, text="Add Cart", command=add_to_cart, bg="#5fbf00", fg="white")
+btn_add_cart = tk.Button(frame_right, text="Add Cart", command=add_to_cart, bg="#5fbf00", fg="white",)
 btn_add_cart.pack(pady=5, fill=tk.X)
 
 btn_remove_cart = tk.Button(frame_right, text="Remove from Cart", command=remove_from_cart, bg="#e50909", fg="white")
@@ -496,7 +501,7 @@ btn_sales_graph.pack(pady=5)
 quantity_frame = tk.Frame(frame_right, bg="#f0f0f0")
 quantity_frame.pack(pady=10)
 
-quantity_label = tk.Label(quantity_frame, text="Quantity:", bg="#f0f0f0", font=("Arial", 10))
+quantity_label = tk.Label(quantity_frame, text=LANG[current_lang]["Quantity"], bg="#f0f0f0", font=("Arial", 10))
 quantity_label.pack(side=tk.LEFT)
 
 quantity_entry = tk.Entry(quantity_frame, width=5)
