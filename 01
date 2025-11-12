@@ -24,7 +24,7 @@ LANG = {
         "search": "Search",
         "complete_purchase": "Complete Purchase",
         "order_history": "Order History",
-        "sales_graph": "Sales Graph",
+        "sales_graph": " Sales Graph ",
         "total": "Total",
         "settings": "Settings",
         "select_language": "Select Language / Dil Seçin",
@@ -140,7 +140,7 @@ def save_products():
 
 # ================== THEME FUNCTION ==================
 def apply_theme():
-    bg_color = "#f0f0f0" if current_theme == "light" else "#302D2D"
+    bg_color = "#f0f0f0" if current_theme == "light" else "#111d29"
     root.configure(bg=bg_color)
     frame_left.configure(bg=bg_color)
     frame_right.configure(bg=bg_color)
@@ -151,12 +151,12 @@ def apply_theme():
     lbl_total.configure(bg=bg_color)
     quantity_label.configure(bg=bg_color)
 
-    entry_search.configure(bg="white" if current_theme=="light" else "#302D2D")
-    entry_name.configure(bg="white" if current_theme=="light" else "#302D2D")
-    entry_price.configure(bg="white" if current_theme=="light" else "#302D2D")
-    entry_discount.configure(bg="white" if current_theme=="light" else "#302D2D")
-    entry_category.configure(bg="white" if current_theme=="light" else "#302D2D")
-    quantity_entry.configure(bg="white" if current_theme=="light" else "#302D2D")
+    entry_search.configure(bg="white" if current_theme=="light" else "#111d29")
+    entry_name.configure(bg="white" if current_theme=="light" else "#111d29")
+    entry_price.configure(bg="white" if current_theme=="light" else "#111d29")
+    entry_discount.configure(bg="white" if current_theme=="light" else "#111d29")
+    entry_category.configure(bg="white" if current_theme=="light" else "#111d29")
+    quantity_entry.configure(bg="white" if current_theme=="light" else "#111d29")
 
 def set_theme(theme):
     global current_theme
@@ -414,7 +414,7 @@ def sales_graph():
 root = tk.Tk()
 root.title("Grocery Product System")
 root.geometry("950x600")
-root.configure(bg="#f0f0f0")
+root.configure(bg="#ffffff")
 
 # Frames
 frame_left = tk.Frame(root, bg="#f0f0f0")
@@ -424,7 +424,7 @@ frame_right = tk.Frame(root, bg="#f0f0f0")
 frame_right.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
 # Labels
-lbl_products = tk.Label(frame_left, text="", bg="#f0f0f0", font=("Roboto", 12, "bold"))
+lbl_products = tk.Label(frame_left, text="", bg="#f0f0f0",  font=("Roboto", 12, "bold"))
 lbl_products.pack()
 
 listbox_products = tk.Listbox(frame_left)
@@ -433,7 +433,7 @@ listbox_products.pack(fill=tk.BOTH, expand=True)
 entry_search = tk.Entry(frame_left)
 entry_search.pack(pady=5, fill=tk.X)
 
-btn_search = tk.Button(frame_left, text="", command=search_product, bg="#007f3f", fg="white")
+btn_search = tk.Button(frame_left, text="", command=search_product, bg="#0fa7d1", fg="white")
 btn_search.pack(pady=5, fill=tk.X)
 
 # Product Entry Fields
@@ -450,22 +450,22 @@ entry_category = tk.Entry(frame_left)
 entry_category.pack(pady=2, fill=tk.X)
 
 # Buttons
-btn_add = tk.Button(frame_left, text="", command=add_product, bg="#5fbf00", fg="white")
+btn_add = tk.Button(frame_left, text="", command=add_product, bg="#0060ab", fg="white")
 btn_add.pack(pady=5, fill=tk.X)
 
-btn_delete = tk.Button(frame_left, text="", command=delete_product, bg="#ff0000", fg="white")
+btn_delete = tk.Button(frame_left, text="", command=delete_product, bg="#001f71", fg="white")
 btn_delete.pack(pady=5, fill=tk.X)
 
-btn_update_stock = tk.Button(frame_left, text="", command=lambda: messagebox.showinfo("Info","Stock Update not implemented"), bg="#2626ff", fg="white")
+btn_update_stock = tk.Button(frame_left, text="", command=lambda: messagebox.showinfo("Info","Stock Update not implemented"), bg="#0060ab", fg="white")
 btn_update_stock.pack(pady=5, fill=tk.X)
 
-btn_update_price = tk.Button(frame_left, text="", command=lambda: messagebox.showinfo("Info","Price Update not implemented"), bg="#007fff", fg="white")
+btn_update_price = tk.Button(frame_left, text="", command=lambda: messagebox.showinfo("Info","Price Update not implemented"), bg="#0fa7d1", fg="white")
 btn_update_price.pack(pady=5, fill=tk.X)
 
-btn_about = tk.Button(root, text=LANG[current_lang]["about"], command=open_about_window, bg="#0080ff", fg="white")
+btn_about = tk.Button(root, text=LANG[current_lang]["about"], command=open_about_window, bg="#001f71", fg="white")
 btn_about.pack(pady=5)
 
-btn_settings = tk.Button(root, text="", command=open_settings, bg="#808080", fg="white")
+btn_settings = tk.Button(root, text="", command=open_settings, bg="#696D79", fg="white")
 btn_settings.pack(pady=5)
 
 lbl_cart = tk.Label(frame_right, text="", bg="#f0f0f0", font=("Roboto", 12, "bold"))
@@ -477,25 +477,25 @@ listbox_cart.pack(fill=tk.BOTH, expand=True)
 lbl_total = tk.Label(frame_right, text="", bg="#f0f0f0", font=("Roboto", 14, "bold"))
 lbl_total.pack(pady=5)
 
-btn_add_cart = tk.Button(frame_right, text="Add Cart", command=add_to_cart, bg="#5fbf00", fg="white",)
+btn_add_cart = tk.Button(frame_right, text="Add Cart", command=add_to_cart, bg="#00b4e7", fg="white",)
 btn_add_cart.pack(pady=5, fill=tk.X)
 
-btn_remove_cart = tk.Button(frame_right, text="Remove from Cart", command=remove_from_cart, bg="#e50909", fg="white")
+btn_remove_cart = tk.Button(frame_right, text="Remove from Cart", command=remove_from_cart, bg="#0060ab", fg="white")
 btn_remove_cart.pack(pady=5, fill=tk.X)
 
-btn_clear_cart = tk.Button(frame_right, text="Clear Cart", command=clear_cart, bg="#ff0000", fg="white")
+btn_clear_cart = tk.Button(frame_right, text="Clear Cart", command=clear_cart, bg="#001f71", fg="white")
 btn_clear_cart.pack(pady=5, fill=tk.X)
 
-btn_export_cart = tk.Button(frame_right, text="Export Cart", command=export_cart, bg="#007fff", fg="white")
+btn_export_cart = tk.Button(frame_right, text="Export Cart", command=export_cart, bg="#0060ab", fg="white")
 btn_export_cart.pack(pady=5, fill=tk.X)
 
-btn_complete_purchase = tk.Button(frame_right, text="Complete Purchase", command=complete_purchase, bg="#3232bc", fg="white")
+btn_complete_purchase = tk.Button(frame_right, text="Complete Purchase", command=complete_purchase, bg="#0fa7d1", fg="white")
 btn_complete_purchase.pack(pady=5, fill=tk.X)
 
-btn_order_history = tk.Button(root, text="", command=show_order_history, bg="#007fff", fg="white")
+btn_order_history = tk.Button(root, text="", command=show_order_history, bg="#2993c3", fg="white")
 btn_order_history.pack(pady=5)
 
-btn_sales_graph = tk.Button(root, text="", command=sales_graph, bg="#007f3f", fg="white")
+btn_sales_graph = tk.Button(root, text="", command=sales_graph, bg="#2993c3", fg="white")
 btn_sales_graph.pack(pady=5)
 
 quantity_frame = tk.Frame(frame_right, bg="#f0f0f0")
